@@ -1,0 +1,110 @@
+{
+    "log":{
+       "access": "",
+		"error": "",
+		"loglevel": "warning"
+        },  
+  "inbounds": [
+	{
+      "tag":"Proxy",
+      "port": 1080,
+      "protocol": "socks",
+      "listen":"127.0.0.1",
+        "settings": {
+		  "auth": "noauth",
+		  "udp": true,
+		  "ip": "127.0.0.1"
+		},
+      "streamSettings":null
+	}
+  ]
+  ,
+  "outbounds": [
+  {
+    "tag": "proxyout",
+    "protocol": "vmess",
+    "settings": {
+      "vnext": [
+        {
+          "address": "bill.g150.top",
+          "port": 443,
+          "users": [
+            {
+              "id": "f500ecf5-e135-49c6-9ce2-78eb490d0ab9",
+              "alterId": 64,
+              "email": "hoendo@163.com",
+              "security": "aes-128-gcm"
+            }
+          ]
+        }
+      ]
+    },
+    "streamSettings": {
+      "network": "ws",
+      "security": "tls",
+      "tlsSettings": {
+        "allowInsecure": true
+      },
+      "wsSettings": {
+        "connectionReuse": true,
+        "path": "/websocket"
+      }
+    },
+    "mux": {
+      "enabled": true,
+	  "concurrency":50
+    }
+  },{
+      "protocol": "freedom",
+      "settings": {},
+	  "tag": "tochina"
+  },{
+      "protocol": "blackhole",
+      "settings": {},
+      "tag": "blocked"
+  }],
+  "dns": {
+    "servers": [
+      "8.8.8.8",
+      "8.8.4.4",
+      "localhost"
+    ]
+  },
+"routing": {
+    "domainStrategy": "IPOnDemand",
+    "rules": [
+	    {
+        "domain": ["site:ad"],
+        "type": "field",
+        "outboundTag": "blocked"       
+      },
+	  {
+        "domain": [
+          "domain:sbxdgfhfjflf.com"
+        ],
+        "type": "field",
+        "outboundTag": "tochina"       
+      },
+      {
+        "type": "field",
+        "outboundTag": "tochina",
+        "domain": ["geosite:cn"] 
+      },
+      {
+        "type": "field",
+        "outboundTag": "tochina",
+        "ip": [
+          "geoip:cn",
+          "geoip:private" 
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "proxyout",
+        "domain": [
+          "site:gw"
+        ]
+      }
+    ]
+  }
+}
